@@ -1,25 +1,9 @@
-FROM php:8.1.4-apache
+FROM php:8.0-fpm-alpine
 
-RUN apt-get update -y && apt-get install -y openssl zip unzip git
+WORKDIR /var/www/html/
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
-COPY . /var/www/html
+COPY . .
 
-WORKDIR /var/www/html
-
-RUN composer install \
-
---ignore-platform-reqs \
-
---no-interaction \
-
---no-plugins \
-
---no-scripts \
-
---prefer-dist
-
-RUN a2enmod rewrite
-
-RUN service apache2 restart
+RUN composer install
